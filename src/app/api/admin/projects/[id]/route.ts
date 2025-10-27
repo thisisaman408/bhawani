@@ -1,0 +1,48 @@
+import { pool } from '@/lib/db';
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function PATCH(
+  request: NextRequest,
+  context : {params : Promise<{id : string}>}
+) {
+  try {
+    const { field, url } = await request.json();
+    const params = await context.params;
+    const projectId = params.id;
+
+    if (!field || !url) {
+      return NextResponse.json(
+        { error: 'Field and URL are required' },
+        { status: 400 }
+      );
+    }
+
+    const validFields = ['image_url', 'video_url'];
+    if (!validFields.includes(field)) {
+      return NextResponse.json(
+        { error: 'Invalid field' },
+        { status: 400 }
+      );
+    }
+
+    const result = await pool.query(
+      `UPDATE featured_projects SET ${field} = $1 WHERE id = $2 RETURNING *`,
+      [url, projectId]
+    );
+
+    if (result.rows.length === 0) {
+      return NextResponse.json(
+        { error: 'Project not found' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(result.rows[0]);
+  } catch (error) {
+    console.error('Error updating project:', error);
+    return NextResponse.json(
+      { error: 'Failed to update project' },
+      { status: 500 }
+    );
+  }
+}
