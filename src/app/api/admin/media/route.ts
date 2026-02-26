@@ -154,6 +154,9 @@ export async function GET() {
     return NextResponse.json(mediaItems);
   } catch (error) {
     console.error('Error fetching media:', error);
+    if (error instanceof Error && 'code' in error) {
+      console.error('Database Error Code:', (error as any).code);
+    }
     return NextResponse.json(
       {
         error: 'Failed to fetch media',

@@ -134,11 +134,13 @@ export default function AdminPanel() {
 		return '';
 	};
 
-	const groupedItems = mediaItems.reduce((acc, item) => {
-		if (!acc[item.section]) acc[item.section] = [];
-		acc[item.section].push(item);
-		return acc;
-	}, {} as Record<string, MediaItem[]>);
+	const groupedItems = Array.isArray(mediaItems)
+		? mediaItems.reduce((acc, item) => {
+				if (!acc[item.section]) acc[item.section] = [];
+				acc[item.section].push(item);
+				return acc;
+		  }, {} as Record<string, MediaItem[]>)
+		: {};
 
 	const handleLogout = async () => {
 		await fetch('/api/admin/logout', { method: 'POST' });
