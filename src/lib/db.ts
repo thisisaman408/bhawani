@@ -8,9 +8,9 @@ export const pool = globalForDb.pool || new Pool({
   ssl: process.env.NODE_ENV === 'production' ? {
     rejectUnauthorized: false
   } : undefined,
-  max: process.env.NODE_ENV === 'production' ? 5 : 10,
+  max: process.env.NODE_ENV === 'production' ? 1 : 10,
   idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 5000,
+  connectionTimeoutMillis: 20000, // Increased to 20s to allow queuing
 });
 
 if (process.env.NODE_ENV !== 'production') globalForDb.pool = pool;

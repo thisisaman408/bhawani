@@ -10,6 +10,7 @@ import Navbar from './components/Navbar';
 import Services from './components/Services';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
+
 async function getHeroContent() {
 	try {
 		const result = await pool.query(
@@ -286,20 +287,19 @@ async function getFooterData() {
 }
 
 export default async function Home() {
-	const [
-		heroContent,
-		projects,
-		aboutContent,
-		servicesContent,
-		clientsData,
-		contactData,
-		footerData,
-	] = await Promise.all([
+	// Execute queries sequentially in groups to reduce DB load
+	const [heroContent, projects] = await Promise.all([
 		getHeroContent(),
 		getFeaturedProjects(),
+	]);
+
+	const [aboutContent, servicesContent, clientsData] = await Promise.all([
 		getAboutUsContent(),
 		getServicesContent(),
 		getClientsData(),
+	]);
+
+	const [contactData, footerData] = await Promise.all([
 		getContactData(),
 		getFooterData(),
 	]);
