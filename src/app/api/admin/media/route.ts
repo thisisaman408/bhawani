@@ -155,7 +155,10 @@ export async function GET() {
   } catch (error) {
     console.error('Error fetching media:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch media' },
+      {
+        error: 'Failed to fetch media',
+        details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : String(error)) : undefined
+      },
       { status: 500 }
     );
   }
