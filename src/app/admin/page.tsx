@@ -36,10 +36,17 @@ export default function AdminPanel() {
 		try {
 			const response = await fetch('/api/admin/media');
 			const data = await response.json();
-			setMediaItems(data);
+			if (response.ok && Array.isArray(data)) {
+				setMediaItems(data);
+			} else {
+				showNotification(
+					'error',
+					data.details || data.error || 'Failed to load media'
+				);
+			}
 			setLoading(false);
 		} catch (error) {
-			showNotification('error', 'Failed to load media');
+			showNotification('error', 'Failed to load media: Network error');
 			setLoading(false);
 		}
 	};
